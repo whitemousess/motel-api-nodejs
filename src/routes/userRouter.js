@@ -9,11 +9,12 @@ const userControllers = require("../Controllers/user.controller");
 router.post("/register", userControllers.register);
 router.post("/login", userControllers.login);
 
+router.get("/current-user", verifyToken, userControllers.currentUser);
 router.get("/get-user/:id", verifyToken, userControllers.getUser);
 router.put(
-  "/:id/edit",
+  "/edit",
   verifyToken,
-  upload.single("imageURl"),
+  upload.single("imageUrl"),
   userControllers.editUser
 );
 

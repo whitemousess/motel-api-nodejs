@@ -7,20 +7,12 @@ const schema = new Schema(
     fullName: { type: String, require: true },
     password: { type: String, require: true },
     email: { type: String, require: true },
-    imageURl: { type: String ,default: null},
-    favoriteId: [
-      {
-        _id: false,
-        motelId: {
-          type: Schema.Types.ObjectId,
-          ref: "favorites",
-        },
-      },
-    ],
+    imageUrl: { type: String, default: null },
+    address: { type: String },
   },
   {
     timestamps: true,
   }
 );
 
-module.exports = mongoose.model("user", schema);
+module.exports = mongoose.model("users", schema);
