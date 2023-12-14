@@ -28,7 +28,7 @@ module.exports = {
     let secretKey = process.env.SECRETKEY;
     let vnpUrl = process.env.VNPURL;
     let returnUrl = process.env.RETURNURL;
-    let orderId = req.body.BookedID;
+    let orderId = moment(date).format("DDHHmmss");;
     let amount = req.body.amount;
     let bankCode = req.body.bankCode;
 
@@ -45,7 +45,7 @@ module.exports = {
     vnp_Params["vnp_Locale"] = locale;
     vnp_Params["vnp_CurrCode"] = currCode;
     vnp_Params["vnp_TxnRef"] = orderId;
-    vnp_Params["vnp_OrderInfo"] = "Thanh toan cho ma GD:" + orderId;
+    vnp_Params["vnp_OrderInfo"] = req.body.BookedID;
     vnp_Params["vnp_OrderType"] = "other";
     vnp_Params["vnp_Amount"] = amount * 100;
     vnp_Params["vnp_ReturnUrl"] = returnUrl;
