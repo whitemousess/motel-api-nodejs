@@ -23,10 +23,28 @@ module.exports = {
   },
 
   getAll(req, res, next) {
+    const { page, per_page } = req.query;
+
     motelModel
       .find({ status: 0 })
       .populate("userId")
-      .then((data) => res.json({ data }))
+      .then((data) => {
+        const currentPage = page || 1;
+        const itemsPerPage = per_page || data.length;
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const totalItems = data.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        const items = data.slice(startIndex, endIndex);
+
+        res.json({
+          data: items,
+          currentPage,
+          totalPages,
+          hasNextPage: currentPage < totalPages,
+          hasPreviousPage: currentPage > 1,
+        });
+      })
       .catch((err) => res.sendStatus(500));
   },
 
