@@ -28,7 +28,7 @@ module.exports = {
     let secretKey = process.env.SECRETKEY;
     let vnpUrl = process.env.VNPURL;
     let returnUrl = process.env.RETURNURL;
-    let orderId = moment(date).format("DDHHmmss");;
+    let orderId = moment(date).format("DDHHmmss");
     let amount = req.body.amount;
     let bankCode = req.body.bankCode;
 
@@ -82,9 +82,10 @@ module.exports = {
     const signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex");
 
     if (secureHash === signed) {
-      res.status(200).send("OK");
+      const responseCode = vnp_Params["vnp_ResponseCode"];
+      res.json({ code: responseCode });
     } else {
-      res.status(400).send("Bad Request");
+      res.status(400);
     }
   },
 };
