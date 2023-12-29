@@ -32,14 +32,18 @@ module.exports = {
   editUser(req, res, next) {
     if (req.file) {
       req.body.imageUrl = req.file.path;
+    } else {
+      req.body.imageUrl = req.user.imageUrl;
     }
-    if (req.body.password) {
+
+    if (req.body.password !== "undefined") {
       const handlePassword = CryptoJS.AES.encrypt(
         req.body.password,
         process.env.ACCESS_TOKEN
       ).toString();
-
       req.body.password = handlePassword;
+    }else {
+      req.body.password = req.user.password;
     }
 
     if (req.body.fullName == "" || req.body.email == "") {
