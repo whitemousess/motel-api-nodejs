@@ -10,7 +10,7 @@ router.post("/register", userControllers.register);
 router.post("/login", userControllers.login);
 
 router.get("/current-user", verifyToken, userControllers.currentUser);
-router.get("/get-user/:id", verifyToken, userControllers.getUser);
+router.get("/get-user/:id", userControllers.getUser);
 router.put(
   "/edit",
   verifyToken,

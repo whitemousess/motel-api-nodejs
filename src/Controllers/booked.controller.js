@@ -4,7 +4,7 @@ const motelModel = require("../models/motel.model");
 module.exports = {
   getMyBooked(req, res, next) {
     bookedModel
-      .find({ userId: req.user.id ,status: 0})
+      .find({ userId: req.user.id, status: 0 })
       .populate(["motelId", "userId"])
       .then((data) => {
         const fillMotel = data.filter((motel) => motel.motelId != null);
@@ -17,22 +17,31 @@ module.exports = {
       });
   },
 
-  booked(req, res, next) {
+  // kiểm tra nếu đã thuê phòng thì không thêm vào db
+  async booked(req, res, next) {
     req.body.motelId = req.params.id;
     req.body.userId = req.user.id;
 
-    const booked = new bookedModel(req.body);
-    booked
-      .save()
-      .then((data) => {
-        motelModel
-          .findOneAndUpdate(
-            { _id: req.body.motelId },
-            { status: 1 }
-          )
-          .then(res.status(200).json({ data }));
-      })
-      .catch((err) => res.sendStatus(500));
+    const motel = await motelModel.findById(req.body.motelId);
+    if (motel) {
+      bookedModel.findOne({ motelId: req.body.motelId }).then((motel) => {
+        if (motel) {
+          res.status(409).json({ error: "Booked this room" });
+        } else {
+          const booked = new bookedModel(req.body);
+          booked
+            .save()
+            .then((data) => {
+              motelModel
+                .findOneAndUpdate({ _id: req.body.motelId }, { status: 1 })
+                .then(res.status(200).json({ data }));
+            })
+            .catch((err) => res.sendStatus(500));
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Motel not found" });
+    }
   },
 
   cancel(req, res, next) {
@@ -40,7 +49,7 @@ module.exports = {
       .findOneAndDelete({ _id: req.params.id })
       .then((data) =>
         motelModel
-          .findOneAndUpdate({ _id: data.motelId }, {status: 0})
+          .findOneAndUpdate({ _id: data.motelId }, { status: 0 })
           .then(res.status(200).json({ data }))
       )
       .catch((err) => res.sendStatus(500));
