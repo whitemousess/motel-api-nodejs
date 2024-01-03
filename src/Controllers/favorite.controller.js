@@ -7,7 +7,7 @@ module.exports = {
     const motel = await motelModel.findById(req.body.motelId);
     if (motel) {
       favoriteModel.findOne({ motelId: req.body.motelId }).then((data) => {
-        if (data) {
+        if (data && data.userId._id === req.user.id) {
           res.status(409).json({ error: "Liked this room" });
         } else {
           const favorite = new favoriteModel(req.body);

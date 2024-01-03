@@ -107,30 +107,34 @@ module.exports = {
   },
 
   deleteMotel(req, res, next) {
-    const deleteMotel = motelModel
-      .findOneAndDelete({ _id: req.params.id })
-      .then((data) => {
-        data.imageUrl.forEach((image) => {
-          const image_id = "motel" + image.split("/motel")[1].split(".")[0];
-          cloudinary.uploader.destroy(image_id);
-        });
-        res.status(200).json("OK");
-      })
-      .catch((err) => res.sendStatus(500));
+    const deleteMotel = () => {
+      motelModel
+        .findOneAndDelete({ _id: req.params.id })
+        .then((data) => {
+          data.imageUrl.forEach((image) => {
+            const image_id = "motel" + image.split("/motel")[1].split(".")[0];
+            cloudinary.uploader.destroy(image_id);
+          });
+          res.status(200).json("OK");
+        })
+        .catch((err) => res.sendStatus(500));
+    };
 
-    const deleteFavorite = favoriteModel
-      .deleteMany({ motelId: req.params.id })
-      .then((data) => console.log(data))
-      .catch((err) => res.sendStatus(500));
+    const deleteFavorite = () => {
+      favoriteModel
+        .deleteMany({ motelId: req.params.id })
+        .then((data) => console.log(data))
+        .catch((err) => res.sendStatus(500));
+    };
 
     bookModel
-      .find({ motelId: req.params.id, status: 0 })
+      .findOne({ motelId: req.params.id, status: 0 })
       .then((data) => {
-        if (data.length > 0) {
+        if (data) {
           res.status(400).json({ message: "There's someone here" });
         } else {
-          deleteMotel;
-          deleteFavorite;
+          deleteMotel();
+          deleteFavorite();
         }
       })
       .catch((err) => res.status(500).json(err));

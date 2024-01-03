@@ -17,5 +17,6 @@ router.put(
   upload.single("imageUrl"),
   userControllers.editUser
 );
+router.get('/history',verifyToken ,userControllers.historyBooked)
 
 module.exports = router;

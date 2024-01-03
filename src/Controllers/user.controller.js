@@ -3,6 +3,7 @@ const CryptoJS = require("crypto-js");
 const cloudinary = require("../config/db/cloudinary");
 
 const UserModel = require("../models/user.model");
+const bookedModel = require("../models/booked.model");
 
 module.exports = {
   register(req, res, next) {
@@ -118,6 +119,20 @@ module.exports = {
             address: data.address,
           },
         });
+      })
+      .catch((err) => res.sendStatus(500));
+  },
+
+  historyBooked(req, res, next) {
+    bookedModel
+      .find({ userId: req.user.id, status: 1 })
+      .populate(["motelId", "userId"])
+      .then((booked) => {
+        if (booked) {
+          res.status(200).json({ data: booked });
+        } else {
+          res.status(404).json({ data: "Booked not found" });
+        }
       })
       .catch((err) => res.sendStatus(500));
   },
