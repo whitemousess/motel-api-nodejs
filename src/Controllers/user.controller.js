@@ -42,21 +42,23 @@ module.exports = {
         process.env.ACCESS_TOKEN
       ).toString();
       req.body.password = handlePassword;
-    }else {
+    } else {
       req.body.password = req.user.password;
     }
+
+    UserModel.findById(req.user.id).then((user) => {
+      if (req.file && user.imageUrl) {
+        const image_id =
+          "motel" + user.imageUrl.split("/motel")[1].split(".")[0];
+        cloudinary.uploader.destroy(image_id);
+      }
+    });
 
     if (req.body.fullName == "" || req.body.email == "") {
       res.status(204).json({ message: "Value is Not available" });
     } else {
-      UserModel.findOneAndUpdate({ _id: req.user.id }, req.body)
+      UserModel.findOneAndUpdate({ _id: req.user.id }, req.body, { new: true })
         .then((user) => {
-          if (req.file && user.imageUrl) {
-            const image_id =
-              "motel" + user.imageUrl.split("/motel")[1].split(".")[0];
-            cloudinary.uploader.destroy(image_id);
-          }
-
           res.status(200).json({ data: user });
         })
         .catch(() => res.sendStatus(500));
