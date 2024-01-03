@@ -7,7 +7,7 @@ const storage = new CloudinaryStorage({
   params: {
     folder: "motel",
     allowedFormats: ["jpg", "png", "jpeg"],
-    transformations: [{ width: 500, height: 500, crop: "limit" }],
+    transformations: [{ width: 500, height: 500, crop: "limit",quality: "80" }],
   },
 });
 
