@@ -3,6 +3,7 @@ const cloudinary = require("../config/db/cloudinary");
 const motelModel = require("../models/motel.model");
 const bookModel = require("../models/booked.model");
 const favoriteModel = require("../models/favorite.model");
+const bookedModel = require("../models/booked.model");
 
 module.exports = {
   getSearch(req, res, next) {
@@ -127,6 +128,13 @@ module.exports = {
         .catch((err) => res.sendStatus(500));
     };
 
+    const deleteBooked = () => {
+      bookedModel
+        .deleteMany({ motelId: req.params.id })
+        .then((data) => console.log(data))
+        .catch((err) => res.sendStatus(500));
+    };
+
     bookModel
       .findOne({ motelId: req.params.id, status: 0 })
       .then((data) => {
@@ -135,6 +143,7 @@ module.exports = {
         } else {
           deleteMotel();
           deleteFavorite();
+          deleteBooked();
         }
       })
       .catch((err) => res.status(500).json(err));
