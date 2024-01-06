@@ -7,27 +7,21 @@ const bookedModel = require("../models/booked.model");
 
 module.exports = {
   register(req, res, next) {
-    UserModel.findOne({ username: req.body.username })
-      .then((user) => {
-        if (user) {
-          res.status(409).json({ error: "username is validate" });
-        } else {
-          const handlePassword = CryptoJS.AES.encrypt(
-            req.body.password,
-            process.env.ACCESS_TOKEN
-          ).toString();
+    const handlePassword = CryptoJS.AES.encrypt(
+      req.body.password,
+      process.env.ACCESS_TOKEN
+    ).toString();
 
-          req.body.password = handlePassword;
-          const account = new UserModel(req.body);
-          account
-            .save()
-            .then((data) => {
-              res.status(200).json({ data });
-            })
-            .catch((error) => res.sendStatus(500));
-        }
+    req.body.password = handlePassword;
+    const account = new UserModel(req.body);
+    account
+      .save()
+      .then((data) => {
+        res.status(200).json({ data });
       })
-      .catch((error) => res.sendStatus(500));
+      .catch((error) => {
+        res.status(500).json({ error: error });
+      });
   },
 
   editUser(req, res, next) {

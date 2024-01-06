@@ -18,12 +18,13 @@ function generateRandomNumber() {
     .padStart(4, Math.floor(Math.random() * 10000));
 }
 
-function sendEmail(email, code, callback) {
+function sendEmail(email, code, username, callback) {
   const mailOptions = {
     from: "motel-rho.vercel.app",
     to: email,
     subject: "Tạo lại mật khẩu",
     text: `
+    Bạn đang yêu cầu tạo lại mật khẩu với tài khoản : ${username}
     Mã chỉ tồn tại trong 5 phút .
     Mã xác minh của bạn là : ${code}`,
   };
@@ -53,8 +54,8 @@ module.exports = {
 
     const numberRandom = parseInt(generateRandomNumber());
 
-    const handleSendEmail = () => {
-      sendEmail(email, numberRandom, (error, result) => {
+    const handleSendEmail = (username) => {
+      sendEmail(email, numberRandom, username, (error, result) => {
         if (error) {
           return res.status(500).json({ error: "Failed to send email." });
         }
@@ -80,7 +81,7 @@ module.exports = {
       .findOne({ email: req.body.email })
       .then((user) => {
         if (user) {
-          handleSendEmail();
+          handleSendEmail(user.username);
         } else {
           res.status(404).json({ error: "Email not found" });
         }
