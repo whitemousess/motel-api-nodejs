@@ -111,6 +111,7 @@ module.exports = {
             email: data.email,
             imageUrl: data.imageUrl,
             address: data.address,
+            phone: data.phone,
           },
         });
       })
